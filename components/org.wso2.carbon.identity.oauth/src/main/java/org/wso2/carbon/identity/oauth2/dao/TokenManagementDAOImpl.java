@@ -142,12 +142,8 @@ public class TokenManagementDAOImpl extends AbstractOAuthDAO implements TokenMan
             while (resultSet.next()) {
 
                 if (iterateId == 0) {
-                    if (isHashDisabled) {
-                        validationDataDO.setAccessToken(getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(
+                    validationDataDO.setAccessToken(getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(
                                 resultSet.getString(1)));
-                    } else {
-                        validationDataDO.setAccessToken(resultSet.getString(1));
-                    }
                     String userName = resultSet.getString(2);
                     int tenantId = resultSet.getInt(3);
                     String userDomain = resultSet.getString(4);
@@ -470,7 +466,6 @@ public class TokenManagementDAOImpl extends AbstractOAuthDAO implements TokenMan
         }
     }
 
-    //TODO
     @Override
     public void updateAppAndRevokeTokensAndAuthzCodes(String consumerKey, Properties properties,
                                                       String[] authorizationCodes, String[] accessTokens)

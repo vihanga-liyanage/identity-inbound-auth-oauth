@@ -24,6 +24,7 @@ import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth.cache.CacheEntry;
 import org.wso2.carbon.identity.oauth.cache.OAuthCache;
 import org.wso2.carbon.identity.oauth.cache.OAuthCacheKey;
+import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 
@@ -68,7 +69,14 @@ public class OAuthCacheRemoveListener extends AbstractCacheListener<OAuthCacheKe
             OAuthCache oauthCache = OAuthCache.getInstance();
 
             oauthCache.clearCacheEntry(oauthcacheKey);
-            oauthcacheKey = new OAuthCacheKey(accessTokenDO.getAccessToken());
+            try {
+                oauthcacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                        getProcessedAccessTokenIdentifier(accessTokenDO.getAccessToken()));
+            } catch (IdentityOAuth2Exception e) {
+                log.error("Error while processing access token with " +
+                        OAuth2Util.getPersistenceProcessor().toString() + " processor.", e);
+                throw new CacheEntryListenerException(e);
+            }
 
             oauthCache.clearCacheEntry(oauthcacheKey);
 

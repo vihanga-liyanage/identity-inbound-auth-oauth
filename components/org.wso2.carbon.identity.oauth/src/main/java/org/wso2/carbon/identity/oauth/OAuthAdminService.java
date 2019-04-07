@@ -684,7 +684,8 @@ public class OAuthAdminService extends AbstractAdmin {
                 accessTokens[countToken] = token;
                 countToken++;
 
-                OAuthCacheKey cacheKeyToken = new OAuthCacheKey(token);
+                OAuthCacheKey cacheKeyToken = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                        getProcessedAccessTokenIdentifier(token));
                 OAuthCache.getInstance().clearCacheEntry(cacheKeyToken);
 
                 String scope = OAuth2Util.buildScopeString(detailToken.getScope());

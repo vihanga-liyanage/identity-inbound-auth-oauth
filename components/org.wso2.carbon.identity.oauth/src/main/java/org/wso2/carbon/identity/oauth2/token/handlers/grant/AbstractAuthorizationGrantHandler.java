@@ -460,12 +460,15 @@ public abstract class AbstractAuthorizationGrantHandler implements Authorization
         }
     }
 
-    private void updateCacheIfEnabled(AccessTokenDO newTokenBean, String scope) {
+    private void updateCacheIfEnabled(AccessTokenDO newTokenBean, String scope) throws IdentityOAuth2Exception {
+
         if (isHashDisabled && cacheEnabled) {
-            OAuthCacheKey cacheKey = getOAuthCacheKey(scope, newTokenBean.getConsumerKey(), newTokenBean.getAuthzUser().toString());
+            OAuthCacheKey cacheKey =
+                    getOAuthCacheKey(scope, newTokenBean.getConsumerKey(), newTokenBean.getAuthzUser().toString());
             oauthCache.addToCache(cacheKey, newTokenBean);
             // Adding AccessTokenDO to improve validation performance
-            OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(newTokenBean.getAccessToken());
+            OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                    getProcessedAccessTokenIdentifier(newTokenBean.getAccessToken()));
             oauthCache.addToCache(accessTokenCacheKey, newTokenBean);
             if (log.isDebugEnabled()) {
                 log.debug("Access token was added to OAuthCache for cache key : " + cacheKey.getCacheKeyString());
@@ -549,11 +552,14 @@ public abstract class AbstractAuthorizationGrantHandler implements Authorization
         return refreshTokenValidityPeriodInMillis;
     }
 
-    private void addTokenToCache(OAuthCacheKey cacheKey, AccessTokenDO existingAccessTokenDO) {
+    private void addTokenToCache(OAuthCacheKey cacheKey, AccessTokenDO existingAccessTokenDO)
+            throws IdentityOAuth2Exception {
+
         if (isHashDisabled && cacheEnabled) {
             oauthCache.addToCache(cacheKey, existingAccessTokenDO);
             // Adding AccessTokenDO to improve validation performance
-            OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(existingAccessTokenDO.getAccessToken());
+            OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                    getProcessedAccessTokenIdentifier(existingAccessTokenDO.getAccessToken()));
             oauthCache.addToCache(accessTokenCacheKey, existingAccessTokenDO);
             if (log.isDebugEnabled()) {
                 log.debug("Access Token info was added to the cache for the cache key : " +

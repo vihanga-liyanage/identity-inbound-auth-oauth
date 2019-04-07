@@ -424,12 +424,8 @@ public class AccessTokenDAOImpl extends AbstractOAuthDAO implements AccessTokenD
                 }
                 if (returnToken) {
                     String accessToken = null;
-                    if (isHashDisabled) {
-                        accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(
+                    accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(
                                 resultSet.getString(1));
-                    } else {
-                        accessToken = resultSet.getString(1);
-                    }
                     String refreshToken = null;
                     if (resultSet.getString(2) != null) {
                         if (isHashDisabled) {
@@ -576,12 +572,8 @@ public class AccessTokenDAOImpl extends AbstractOAuthDAO implements AccessTokenD
 
             if (resultSet.next()) {
                 String accessToken;
-                if (isHashDisabled) {
-                    accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(
+                accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(
                             resultSet.getString(1));
-                } else {
-                    accessToken = resultSet.getString(1);
-                }
                 String refreshToken = null;
                 if (resultSet.getString(2) != null) {
                     if (isHashDisabled) {
@@ -680,10 +672,7 @@ public class AccessTokenDAOImpl extends AbstractOAuthDAO implements AccessTokenD
 
             while (resultSet.next()) {
                 String accessToken = null;
-                if (isHashDisabled) {
-                    accessToken = getPersistenceProcessor().
-                            getPreprocessedAccessTokenIdentifier(resultSet.getString(1));
-                }
+                accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(resultSet.getString(1));
                 if (accessTokenDOMap.get(accessToken) == null) {
                     String refreshToken = null;
                     if (isHashDisabled) {
@@ -1383,10 +1372,7 @@ public class AccessTokenDAOImpl extends AbstractOAuthDAO implements AccessTokenD
 
             while (resultSet.next()) {
                 String accessToken = null;
-                if (isHashDisabled) {
-                    accessToken = getPersistenceProcessor().
-                            getPreprocessedAccessTokenIdentifier(resultSet.getString(1));
-                }
+                accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(resultSet.getString(1));
                 if (accessTokenDOMap.get(accessToken) == null) {
                     String refreshToken = null;
                     if (isHashDisabled) {
@@ -1458,9 +1444,7 @@ public class AccessTokenDAOImpl extends AbstractOAuthDAO implements AccessTokenD
 
             while (resultSet.next()) {
                 String accessToken = null;
-                if (isHashDisabled) {
-                    accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(resultSet.getString(1));
-                }
+                accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(resultSet.getString(1));
                 if (accessTokenDOMap.get(accessToken) == null) {
                     String refreshToken = null;
                     if (isHashDisabled) {
@@ -1866,10 +1850,8 @@ public class AccessTokenDAOImpl extends AbstractOAuthDAO implements AccessTokenD
                 if (latestIssuedTime == issuedTime) {
                     String tokenState = resultSet.getString(7);
                     String accessToken = null;
-                    if (isHashDisabled) {
-                        accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(
-                                resultSet.getString(1));
-                    }
+                    accessToken = getPersistenceProcessor().getPreprocessedAccessTokenIdentifier(
+                            resultSet.getString(1));
                     String refreshToken = null;
                     if (resultSet.getString(2) != null) {
                         if (isHashDisabled) {

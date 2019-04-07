@@ -85,7 +85,7 @@ public class HashingPersistenceProcessor implements TokenPersistenceProcessor {
     public String getPreprocessedAccessTokenIdentifier(String processedAccessTokenIdentifier)
             throws IdentityOAuth2Exception {
 
-        throw new UnsupportedOperationException("Invalid operation on hashed access token");
+        return processedAccessTokenIdentifier;
     }
 
     @Override

@@ -277,6 +277,8 @@ public class OAuth2Util {
     private static final String CLIENT_SECRET_POST = "client_secret_post";
     private static final String PRIVATE_KEY_JWT = "private_key_jwt";
 
+    private static TokenPersistenceProcessor persistenceProcessor = null;
+
     private OAuth2Util() {
 
     }
@@ -452,23 +454,6 @@ public class OAuth2Util {
         }
 
         return true;
-    }
-
-    private static TokenPersistenceProcessor getPersistenceProcessor() {
-
-        TokenPersistenceProcessor persistenceProcessor;
-        try {
-            persistenceProcessor = OAuthServerConfiguration.getInstance().getPersistenceProcessor();
-        } catch (IdentityOAuth2Exception e) {
-            String msg = "Error retrieving TokenPersistenceProcessor configured in OAuth.TokenPersistenceProcessor " +
-                    "in identity.xml. Defaulting to PlainTextPersistenceProcessor.";
-            log.warn(msg);
-            if (log.isDebugEnabled()) {
-                log.debug(msg, e);
-            }
-            persistenceProcessor = new PlainTextPersistenceProcessor();
-        }
-        return persistenceProcessor;
     }
 
     /**
@@ -1339,7 +1324,8 @@ public class OAuth2Util {
         AccessTokenDO accessTokenDO = null;
 
         // check the cache, if caching is enabled.
-        OAuthCacheKey cacheKey = new OAuthCacheKey(accessTokenIdentifier);
+        OAuthCacheKey cacheKey = new OAuthCacheKey(getPersistenceProcessor().getProcessedAccessTokenIdentifier(
+                accessTokenIdentifier));
         CacheEntry result = OAuthCache.getInstance().getValueFromCache(cacheKey);
         // cache hit, do the type check.
         if (result != null && result instanceof AccessTokenDO) {
@@ -1360,7 +1346,6 @@ public class OAuth2Util {
 
         // add the token back to the cache in the case of a cache miss
         if (!cacheHit) {
-            cacheKey = new OAuthCacheKey(accessTokenIdentifier);
             OAuthCache.getInstance().addToCache(cacheKey, accessTokenDO);
             if (log.isDebugEnabled()) {
                 log.debug("Access Token Info object was added back to the cache.");
@@ -2750,5 +2735,26 @@ public class OAuth2Util {
 
         return revocationRequestDTO;
     }
-}
 
+    /**
+     * Used to set the TokenPersistenceProcessor object, as retrieving it multiple times
+     * could become a performance hit.
+     *
+     * @return Returns a TokenPersistenceProcessor object.
+     */
+    public static TokenPersistenceProcessor getPersistenceProcessor() {
+
+        if (persistenceProcessor != null) {
+            return persistenceProcessor;
+        } else {
+            try {
+                persistenceProcessor = OAuthServerConfiguration.getInstance().getPersistenceProcessor();
+                return persistenceProcessor;
+            } catch (IdentityOAuth2Exception e) {
+                log.error("Error retrieving TokenPersistenceProcessor. Selecting the PlainTextProcessor as the " +
+                        "default TokenPersistenceProcessor.", e);
+                return new PlainTextPersistenceProcessor();
+            }
+        }
+    }
+}

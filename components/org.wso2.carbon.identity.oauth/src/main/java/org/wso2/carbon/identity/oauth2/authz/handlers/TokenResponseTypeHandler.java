@@ -423,7 +423,8 @@ public class TokenResponseTypeHandler extends AbstractResponseTypeHandler {
             if (isHashDisabled && cacheEnabled) {
                 OAuthCache.getInstance().addToCache(cacheKey, newAccessTokenDO);
                 // Adding AccessTokenDO to improve validation performance
-                OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(accessToken);
+                OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(
+                        OAuth2Util.getPersistenceProcessor().getProcessedAccessTokenIdentifier(accessToken));
                 OAuthCache.getInstance().addToCache(accessTokenCacheKey, newAccessTokenDO);
                 if (log.isDebugEnabled()) {
                     log.debug("Access Token was added to OAuthCache for cache key : " + cacheKey.getCacheKeyString());

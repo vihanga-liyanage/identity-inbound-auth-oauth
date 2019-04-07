@@ -202,7 +202,9 @@ public class RefreshGrantHandler extends AbstractAuthorizationGrantHandler {
         return true;
     }
 
-    private void removeIfCached(OAuth2AccessTokenReqDTO tokenReq, RefreshTokenValidationDataDO validationBean) {
+    private void removeIfCached(OAuth2AccessTokenReqDTO tokenReq, RefreshTokenValidationDataDO validationBean)
+            throws IdentityOAuth2Exception {
+
         if (cacheEnabled) {
             clearCache(tokenReq.getClientId(), validationBean.getAuthorizedUser().toString(),
                     validationBean.getScope(), validationBean.getAccessToken());
@@ -289,7 +291,8 @@ public class RefreshGrantHandler extends AbstractAuthorizationGrantHandler {
     }
 
     private void updateCacheIfEnabled(OAuthTokenReqMessageContext tokReqMsgCtx, AccessTokenDO accessTokenBean,
-                                      String clientId, RefreshTokenValidationDataDO oldAccessToken) {
+                                      String clientId, RefreshTokenValidationDataDO oldAccessToken)
+            throws IdentityOAuth2Exception {
         if (isHashDisabled && cacheEnabled) {
             // Remove old access token from the OAuthCache
             String scope = OAuth2Util.buildScopeString(tokReqMsgCtx.getScope());
@@ -299,14 +302,16 @@ public class RefreshGrantHandler extends AbstractAuthorizationGrantHandler {
             OAuthCache.getInstance().clearCacheEntry(oauthCacheKey);
 
             // Remove old access token from the AccessTokenCache
-            OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(oldAccessToken.getAccessToken());
+            OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                    getProcessedAccessTokenIdentifier(oldAccessToken.getAccessToken()));
             OAuthCache.getInstance().clearCacheEntry(accessTokenCacheKey);
 
             // Add new access token to the OAuthCache
             OAuthCache.getInstance().addToCache(oauthCacheKey, accessTokenBean);
 
             // Add new access token to the AccessTokenCache
-            accessTokenCacheKey = new OAuthCacheKey(accessTokenBean.getAccessToken());
+            accessTokenCacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                    getProcessedAccessTokenIdentifier(accessTokenBean.getAccessToken()));
             OAuthCache.getInstance().addToCache(accessTokenCacheKey, accessTokenBean);
 
             if (log.isDebugEnabled()) {
@@ -377,7 +382,8 @@ public class RefreshGrantHandler extends AbstractAuthorizationGrantHandler {
         return tokenRespDTO;
     }
 
-    private void clearCache(String clientId, String authorizedUser, String[] scopes, String accessToken) {
+    private void clearCache(String clientId, String authorizedUser, String[] scopes, String accessToken)
+            throws IdentityOAuth2Exception {
 
         boolean isUsernameCaseSensitive = IdentityUtil.isUserStoreInUsernameCaseSensitive(authorizedUser);
         String cacheKeyString;
@@ -392,7 +398,8 @@ public class RefreshGrantHandler extends AbstractAuthorizationGrantHandler {
         OAuthCache.getInstance().clearCacheEntry(oauthCacheKey);
 
         // Remove the old access token from the AccessTokenCache
-        OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(accessToken);
+        OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                getProcessedAccessTokenIdentifier(accessToken));
         OAuthCache.getInstance().clearCacheEntry(accessTokenCacheKey);
     }
 

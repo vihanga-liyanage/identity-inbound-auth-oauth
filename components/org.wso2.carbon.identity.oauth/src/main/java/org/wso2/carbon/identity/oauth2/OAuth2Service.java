@@ -332,7 +332,8 @@ public class OAuth2Service extends AbstractAdmin {
 
                 } else {
 
-                    OAuthCacheKey cacheKey = new OAuthCacheKey(revokeRequestDTO.getToken());
+                    OAuthCacheKey cacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                            getProcessedAccessTokenIdentifier(revokeRequestDTO.getToken()));
                     CacheEntry result = OAuthCache.getInstance().getValueFromCache(cacheKey);
 
                     // check cache hit, do the type check.
@@ -387,9 +388,11 @@ public class OAuth2Service extends AbstractAdmin {
                     OAuthUtil.clearOAuthCache(revokeRequestDTO.getConsumerKey(), refreshTokenDO.getAuthorizedUser(),
                             OAuth2Util.buildScopeString(refreshTokenDO.getScope()));
                     OAuthUtil.clearOAuthCache(revokeRequestDTO.getConsumerKey(), refreshTokenDO.getAuthorizedUser());
-                    OAuthUtil.clearOAuthCache(refreshTokenDO.getAccessToken());
-                    OAuthTokenPersistenceFactory.getInstance().getAccessTokenDAO()
-                            .revokeAccessTokens(new String[]{refreshTokenDO.getAccessToken()});
+                    OAuthUtil.clearOAuthCache(OAuth2Util.getPersistenceProcessor().
+                            getProcessedAccessTokenIdentifier(refreshTokenDO.getAccessToken()));
+
+                    OAuthTokenPersistenceFactory.getInstance().getAccessTokenDAO().revokeAccessTokens(
+                            new String[]{refreshTokenDO.getAccessToken()});
                     addRevokeResponseHeaders(revokeResponseDTO,
                             refreshTokenDO.getAccessToken(),
                             revokeRequestDTO.getToken(),
@@ -400,7 +403,9 @@ public class OAuth2Service extends AbstractAdmin {
                         OAuthUtil.clearOAuthCache(revokeRequestDTO.getConsumerKey(), accessTokenDO.getAuthzUser(),
                                 OAuth2Util.buildScopeString(accessTokenDO.getScope()));
                         OAuthUtil.clearOAuthCache(revokeRequestDTO.getConsumerKey(), accessTokenDO.getAuthzUser());
-                        OAuthUtil.clearOAuthCache(revokeRequestDTO.getToken());
+                        OAuthUtil.clearOAuthCache(OAuth2Util.getPersistenceProcessor().
+                                getProcessedAccessTokenIdentifier(revokeRequestDTO.getToken()));
+
                         String scope = OAuth2Util.buildScopeString(accessTokenDO.getScope());
                         String authorizedUser = accessTokenDO.getAuthzUser().toString();
                         synchronized ((revokeRequestDTO.getConsumerKey() + ":" + authorizedUser + ":" + scope).intern()) {

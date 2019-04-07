@@ -52,6 +52,7 @@ import org.wso2.carbon.identity.oauth.dao.OAuthAppDO;
 import org.wso2.carbon.identity.oauth.dao.OAuthConsumerDAO;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.dao.OAuthTokenPersistenceFactory;
+import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -370,7 +371,8 @@ public class OAuthApplicationMgtListener extends AbstractApplicationMgtListener 
                     }
 
                     // Remove access token from OAuthCache
-                    OAuthCacheKey oauthCacheKey = new OAuthCacheKey(accessToken);
+                    OAuthCacheKey oauthCacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                            getProcessedAccessTokenIdentifier(accessToken));
                     CacheEntry oauthCacheEntry = OAuthCache.getInstance().getValueFromCache(oauthCacheKey);
                     if (oauthCacheEntry != null) {
                         OAuthCache.getInstance().clearCacheEntry(oauthCacheKey);

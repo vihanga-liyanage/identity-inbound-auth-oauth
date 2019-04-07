@@ -866,11 +866,13 @@ public class ResponseTypeHandlerUtil {
         return new OAuthCacheKey(cacheKeyString);
     }
 
-    private static void addTokenToCache(OAuthCacheKey cacheKey, AccessTokenDO tokenBean) {
+    private static void addTokenToCache(OAuthCacheKey cacheKey, AccessTokenDO tokenBean)
+            throws IdentityOAuth2Exception {
 
         OAuthCache.getInstance().addToCache(cacheKey, tokenBean);
         // Adding AccessTokenDO to improve validation performance
-        OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(tokenBean.getAccessToken());
+        OAuthCacheKey accessTokenCacheKey = new OAuthCacheKey(OAuth2Util.getPersistenceProcessor().
+                getProcessedAccessTokenIdentifier(tokenBean.getAccessToken()));
         OAuthCache.getInstance().addToCache(accessTokenCacheKey, tokenBean);
         if (log.isDebugEnabled()) {
             log.debug("Access token info was added to the cache for cache key : " + cacheKey.getCacheKeyString());
