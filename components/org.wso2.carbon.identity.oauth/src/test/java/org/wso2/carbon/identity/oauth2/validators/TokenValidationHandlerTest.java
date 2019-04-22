@@ -97,6 +97,8 @@ public class TokenValidationHandlerTest extends PowerMockTestCase {
     private TenantManager tenantManager;
     @Mock
     private RealmConfiguration realmConfiguration;
+    @Mock
+    private OauthTokenIssuerImpl oauthTokenIssuer;
 
     private TokenValidationHandler tokenValidationHandler;
 
@@ -182,6 +184,7 @@ public class TokenValidationHandlerTest extends PowerMockTestCase {
         when(OAuthServerConfiguration.getInstance().getOAuthTokenGenerator()).thenReturn(oAuthIssuer);
         when(OAuthServerConfiguration.getInstance().getSignatureAlgorithm()).thenReturn("SHA256withRSA");
         when(OAuthServerConfiguration.getInstance().getHashAlgorithm()).thenReturn("SHA-256");
+        when(OAuthServerConfiguration.getInstance().getIdentityOauthTokenIssuer()).thenReturn(oauthTokenIssuer);
 
         Map<String, OauthTokenIssuer> oauthTokenIssuerMap = new HashMap<>();
         oauthTokenIssuerMap.put(DEFAULT_TOKEN_TYPE, new OauthTokenIssuerImpl());

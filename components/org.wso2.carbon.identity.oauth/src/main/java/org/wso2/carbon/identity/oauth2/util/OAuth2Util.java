@@ -2848,15 +2848,16 @@ public class OAuth2Util {
     private static void extractDefaultOauthTokenIssuers( Map<String, OauthTokenIssuer> allOAuthTokenIssuerMap,
             Map<String, OauthTokenIssuer> defaultOAuthTokenIssuerMap) {
 
-        // TODO: 4/9/19 Implement logic to read default issuer from config.
-        // TODO: 4/9/19 add sorting mechanism to use JWT issuer first.
-        defaultOAuthTokenIssuerMap.put(OAuthServerConfiguration.JWT_TOKEN_TYPE,
-                allOAuthTokenIssuerMap.get(OAuthServerConfiguration.JWT_TOKEN_TYPE));
-        allOAuthTokenIssuerMap.remove(OAuthServerConfiguration.JWT_TOKEN_TYPE);
+        OauthTokenIssuer configuredOauthTokenIssuer =
+                OAuthServerConfiguration.getInstance().getIdentityOauthTokenIssuer();
+        for (Map.Entry<String, OauthTokenIssuer> issuerEntry: allOAuthTokenIssuerMap.entrySet()) {
 
-        defaultOAuthTokenIssuerMap.put(OAuthServerConfiguration.DEFAULT_TOKEN_TYPE,
-                allOAuthTokenIssuerMap.get(OAuthServerConfiguration.DEFAULT_TOKEN_TYPE));
-        allOAuthTokenIssuerMap.remove(OAuthServerConfiguration.DEFAULT_TOKEN_TYPE);
+            if (issuerEntry.getValue().getClass().equals(configuredOauthTokenIssuer.getClass())) {
+                defaultOAuthTokenIssuerMap.put(issuerEntry.getKey(), issuerEntry.getValue());
+                allOAuthTokenIssuerMap.remove(issuerEntry.getKey());
+                break;
+            }
+        }
     }
 
     /**

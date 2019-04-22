@@ -535,7 +535,8 @@ public class OAuthServerConfiguration {
     }
 
     /**
-     * Returns server level default identity oauth token issuer
+     * Returns server level default identity oauth token issuer configured in the identity.xml file.
+     * If not configured, {@link OauthTokenIssuerImpl} will be returned.
      *
      * @return instance of default identity oauth token issuer
      */
